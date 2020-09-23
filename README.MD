@@ -2,99 +2,131 @@
 
 > 仓库地址：[https://gitlab.frxs.cn/xsfe-utils/vue-dialogs.git](https://gitlab.frxs.cn/xsfe-utils/vue-dialogs.git)
 
+## vue-dialogs v0.1.0
 
+dialog router，类 vue-router 的方式管理 dialog，类 component 的方式使用 dialog。
 
-<a name="rLRfb"></a>
-# 何谓集中式管理
-![image.png](https://cdn.nlark.com/yuque/0/2020/png/84824/1600688420538-7fea77b2-29de-431e-bfa5-c4c5115be685.png#align=left&display=inline&height=160&margin=%5Bobject%20Object%5D&name=image.png&originHeight=160&originWidth=285&size=11736&status=done&style=none&width=285)<br />如图，项目中所有「弹窗组件」全部收纳到一处<br />![image.png](https://cdn.nlark.com/yuque/0/2020/png/84824/1600688625952-4560f8dd-7314-4531-966d-a722735f2626.png#align=left&display=inline&height=151&margin=%5Bobject%20Object%5D&name=image.png&originHeight=151&originWidth=495&size=20721&status=done&style=none&width=495)<br />清晰的弹框配置<br />![image.png](https://cdn.nlark.com/yuque/0/2020/png/84824/1600688552291-b92e61c3-41b2-4c0d-b3ef-c60a0634dc94.png#align=left&display=inline&height=146&margin=%5Bobject%20Object%5D&name=image.png&originHeight=146&originWidth=316&size=12893&status=done&style=none&width=316)<br />使用时直接全局调用<br />
+- 全局注册，统一管理。
+- 可懒加载。
+- 支持 props，callback。
+- 可通过 uid（dialog 唯一返回值），获取到 dialogComponent 的组件实例。
+- 可通过 uid 关闭指定的 dialog。
+- 可通过 v-dialog 指令打开 dialog。
 
-<a name="mDc0g"></a>
-# vue-dialogs 介绍
-vue-dialogs 解决如下问题：
+## Installation
 
-- 项目中 `dialog` 分散的到处都是
-- 每个页面引入 `dialog` 时都需要在页面 `template` 中添加如下代码
+```js
+npm i @xsyx/vue-dialogs -S
+```
 
+## Methods
 
+| 方法      | 说明                                                                                                                                              | 参数                                                                                                                                                                                                                       |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| push      | 类似 vue-router 的 push，用来打开一个 dialog 组件。this.\$dialogRouter.push({name,props,on},callBack)                                             | name[type=String]为 dialogRouter 里注册时的 name 值，props[type=Object]为需要传入到 dialog 的属性，on[type=Object]为注册的 event；callBack 为打开 dialog 之后的回调，它有两个参数，一个为 dialogComponent 实例，一个为 uid |
+| close     | 可通过 uid 来关闭 dialog。this.\$dialogRouter.close(uid)                                                                                          | uid 为 push 时返回的唯一值                                                                                                                                                                                                 |
+| closeAll  | 关闭全部 dialog                                                                                                                                   | 无                                                                                                                                                                                                                         |
+| getDialog | 用来获取 dialog 实例，这是一个同步方法，因为视图渲染 或 懒加载的原因，可能会无法获取到实例，需要自行把握调用时机，建议在 push callBack 里获取实例 | uid 为 push 时返回的唯一值                                                                                                                                                                                                 |
+
+## Notes
+
+Vue.use(DialogRouter, {key: 'show'})，这里的 key 即为控制 dialog 是否显示的变量。默认为 show。dialog 组件里必须要有这个 key 
+
+## Usage
+
+```js
+// main.js
+import Vue from "vue";
+import App from "./App.vue";
+import dialogRouter from "./dialogRouter";
+
+new Vue({
+  router,
+  dialogRouter,
+  render: (h) => h(App),
+}).$mount("#app");
+```
+
+```js
+// dialogRouter.js
+import Vue from "vue";
+import DialogRouter from "vue-dialogs-router";
+import dialog1 from "@/dialog/dialog-1.vue";
+Vue.use(DialogRouter);
+const dialogRouter = new DialogRouter({
+  dia1: dialog1,
+  dia2: () => import(/* webpackChunkName: "dialog" */ "@/dialog/dialog-2.vue"),
+  dia3: () => import(/* webpackChunkName: "dialog" */ "@/dialog/dialog-3.vue"),
+});
+export default dialogRouter;
+```
+
+```vue
+// page.vue
+<template>
+  <div>
+    <button v-dialog:click="{ name: 'dia3' }">打开 dialog</button>
+  </div>
+</template>
+<script>
+export default {
+    mounted(){
+        // dia1
+        this.$dialogRouter.push({
+            name: "dia1",
+            props: {
+                name: "kael",
+                age: 100,
+                sex: "男",
+                list: [1, 2, 3],
+            },
+            on: {
+                callback: (data) => {
+                    console.log(data);
+                },
+            },
+        });
+
+        // dia2
+        dialog2() {
+            this.uid = this.$dialogRouter.push(
+                {
+                    name: "dia2",
+                },
+                (instance, uid) => {
+                    // 在回调里操作实例
+                    console.log(instance);
+                    console.log(uid);
+                    setTimeout(() => {
+                        instance.name = "外部修改";
+                    }, 2000);
+                }
+            );
+            // 调用 this.$dialogRouter.close(uid) 关闭 dialog
+            setTimeout(()=>{
+                this.$dialogRouter.close(this.uid)
+            }, 4000)
+        },
+    }
+}
+</script>
+```
 
 ```vue
 <template>
-  <div>
-    ...
-    <a-dialog></a-dialog>
-  </div>
+  <el-dialog :visible.sync="show" title="dialog3">
+    这是通过 v-dialog 打开的 dialog
+  </el-dialog>
 </template>
+
+<script>
+export default {
+  name: "dialog_3",
+  data() {
+    return {
+      show: false,
+    };
+  },
+};
+</script>
 ```
-
-
-- 当 `dialog` 位置发生变化时，每个页面都需要改动
-- ...
-
-
-
-<a name="bc120b21"></a>
-# 用法
-<a name="qbVc8"></a>
-## 安装
-```shell
-cnpm i -S @xsyx/vue-dialogs
-```
-
-
-<a name="tHqv9"></a>
-## 配置
-<a name="6dej5"></a>
-### JavaScript
-```javascript
-// 导入
-import VueDialogs from '@xsyx/vue-dialogs'
-// 注册插件
-Vue.use(VueDilogs);
-
-// 像配置 路由一样配置 dialogs
-const dialogs = new VueDialogs({
-  dialogs:[
-    {name: 'dsEdit', component: DataSourceEditor}
-  ],
-})
-
-// 使用
-new Vue({
-  el: '#app',
-
-  dialogs,  // 挂载到全局
-
-  router,
-  vuex
-})
-```
-<a name="2KSSH"></a>
-### HTML
-```html
-<div id="app">
-  <h1>Hello App!</h1>
-  
-  <!-- 弹框匹配到的组件渲染在这里 -->
-  <jv-dialogs></jv-dialogs>
-</div>
-```
-> 为什么要这么做，因为弹窗也是dom，仍然需要找个节点挂一下
-
-
-
-<a name="snqZz"></a>
-## 使用
-使用起来更简单<br />
-
-```javascript
-// 在任何组件中，可以通通过全局的方式直接使用
-// 无需额外引入组件或者什么其他的
-mounted(){
-
-  // ...
-
-  this.$dialogs.dsEdit.show()
-}
-```
-
-
