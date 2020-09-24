@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <h2 class="h2">dialog router，类vue-router的方式管理dialog，类component的方式使用dialog。</h2>
-    <p class="p">
+    <p class="p" style="padding-left: 20px">
       1: 全局注册，统一管理。
       <br />2: 可懒加载。
       <br />3: 支持props，callback。
@@ -10,74 +10,98 @@
       <br />6: 可通过 v-dialog 指令打开 dialog。
     </p>
     <div class="pane">
-      <h3 class="h3">methods</h3>
+      <h3 class="h3">Installation</h3>
+      <pre v-highlightjs="installCode" class="code-container">
+        <code class="js code-value"></code>
+        <i class="el-icon-document-copy copy-button" @click="copy('install')"></i>
+      </pre>
+    </div>
+    <div class="pane">
+      <h3 class="h3">Usage</h3>
+      <pre v-highlightjs="useCode" class="code-container">
+        <code class="js code-value"></code>
+        <i class="el-icon-document-copy copy-button" @click="copy('use')"></i>
+      </pre>
+    </div>
+    <div class="pane">
+      <h3 class="h3">Notes</h3>
+      <p
+        class="p"
+      >Vue.use(DialogRouter, {key: 'show'})，这里的 key 即为控制 dialog 是否显示的变量。默认为 show。dialog 组件里必须要有这个 key</p>
+    </div>
+    <div class="pane">
+      <h3 class="h3">基础使用</h3>
+      <p class="p">传入 props，通过on注册callback</p>
+      <el-collapse>
+        <el-collapse-item>
+          <template slot="title">
+            <page1 />
+          </template>
+          <pre v-highlightjs="page1Code" class="code-container">
+            <code class="html code-value"></code>
+            <i class="el-icon-document-copy copy-button" @click="copy('page1')"></i>
+          </pre>
+        </el-collapse-item>
+      </el-collapse>
+    </div>
+    <div class="pane">
+      <h3 class="h3">uid用法</h3>
+      <p class="p">通过 this.$dialogRouter.push() 返回 uid，在当前 dialog 处理激活时，可通过 uid 获取 dialogComponent的组件实例，也可调用 this.$dialogRouter.close(uid) 来关闭当前dialog。</p>
+      <el-collapse>
+        <el-collapse-item>
+          <template slot="title">
+            <page2 />
+          </template>
+          <pre v-highlightjs="page2Code" class="code-container">
+            <code class="html code-value"></code>
+            <i class="el-icon-document-copy copy-button" @click="copy('page2')"></i>
+          </pre>
+        </el-collapse-item>
+      </el-collapse>
+    </div>
+    <div class="pane">
+      <h3 class="h3">指令方式</h3>
+      <p class="p">可通过在元素上设置v-dialog指令，打开dialog</p>
+      <el-collapse>
+        <el-collapse-item>
+          <template slot="title">
+            <page3 />
+          </template>
+          <pre v-highlightjs="page3Code" class="code-container">
+            <code class="html code-value"></code>
+            <i class="el-icon-document-copy copy-button" @click="copy('page3')"></i>
+          </pre>
+        </el-collapse-item>
+      </el-collapse>
+    </div>
+    <div class="pane">
+      <h3 class="h3">Methods</h3>
       <el-table :data="tableData" stripe style="width: 100%">
         <el-table-column prop="name" label="方法" width="100"></el-table-column>
         <el-table-column prop="des" label="说明"></el-table-column>
         <el-table-column prop="props" label="参数"></el-table-column>
       </el-table>
     </div>
-    <div class="pane">
-      <h3 class="h3">使用</h3>
-      <div class="code">
-        <codemirror ref="codeUse" v-model="codeUse" :options="useOptions" />
-      </div>
-    </div>
-    <div class="pane">
-      <h3 class="h3">基本用法</h3>
-      <p class="p">传入 props，通过on注册callback</p>
-      <el-button @click="dialog1">打开 dialog</el-button>
-      <div class="code">
-        <codemirror ref="baseCode" v-model="baseCode" :options="cmOptions" />
-      </div>
-    </div>
-    <div class="pane">
-      <h3 class="h3">uid用法</h3>
-      <p
-        class="p"
-      >通过 this.$dialogRouter.push() 返回 uid，在当前 dialog 处理激活时，可通过 uid 获取 dialogComponent的组件实例，也可调用 this.$dialogRouter.close(uid) 来关闭当前dialog。</p>
-      <el-button @click="dialog2">打开 dialog</el-button>
-      <div class="code">
-        <codemirror ref="codeUid" v-model="codeUid" :options="cmOptions" />
-      </div>
-    </div>
-    <div class="pane">
-      <h3 class="h3">v-dialog用法</h3>
-      <p class="p">可通过在元素上设置v-dialog指令，打开dialog</p>
-      <el-button v-dialog:click="{name: 'dia3'}">打开 dialog</el-button>
-      <div class="code">
-        <codemirror ref="codeVDialog" v-model="codeVDialog" :options="cmOptions" />
-      </div>
-    </div>
   </div>
 </template>
 <script>
-import { codemirror } from "vue-codemirror";
-import "codemirror/lib/codemirror.css";
-import "codemirror/theme/base16-light.css";
-import "codemirror/mode/vue/vue.js";
-import "codemirror/mode/javascript/javascript.js";
-import "codemirror/addon/hint/show-hint.css";
-import "codemirror/addon/hint/show-hint.js";
+import useCode from "!!raw-loader!@/view/main.js";
+import page1 from "@/components/page1";
+import page1Code from "!!raw-loader!@/components/page1.vue";
+import page2 from "@/components/page2";
+import page2Code from "!!raw-loader!@/components/page2.vue";
+import page3 from "@/components/page3";
+import page3Code from "!!raw-loader!@/components/page3.vue";
 export default {
   name: "page",
-  components: { codemirror },
-  computed: {
-    codemirrorCodeUse(){
-      return this.$refs.codeUse.codemirror
-    },
-    codemirrorBaseCode(){
-      return this.$refs.baseCode.codemirror
-    },
-    codemirrorCodeUid(){
-      return this.$refs.codeUid.codemirror
-    },
-    codemirrorCodeVDialog(){
-      return this.$refs.codeVDialog.codemirror
-    },
-  },
+  components: { page1, page2, page3 },
   data() {
     return {
+      installCode: "npm i @xsyx/vue-dialogs -S",
+      useCode,
+      page1Code,
+      page2Code,
+      page3Code,
       tableData: [
         {
           name: "push",
@@ -103,154 +127,20 @@ export default {
           props: "uid 为 push 时返回的唯一值",
         },
       ],
-      baseCode: `<template>
-      <el-button @click="dialog1">打开 dialog</el-button>
-</template>
-\<script>
-export default {
-  methods: {
-    dialog1(){
-      this.$dialogRouter.push({
-        name: 'dia1',
-        props: {
-          name: 'kael',
-          age: 24,
-          sex: '男',
-          list: [1,2,3]
-        }
-      })
-    },
-    on: {
-      callback: data => {
-        console.log(data)
-      }
-    }
-  }
-}
-<\/script>`,
-      codeVDialog: `<template>
-      <el-button v-dialog:click="{name: 'dia3'}">打开 dialog</el-button>
-</template>`,
-      codeUid: `<template>
-      <el-button @click="dialog2">打开 dialog</el-button>
-</template>
-\<script>
-export default {
-  methods: {
-    dialog2() {
-      this.uid = this.$dialogRouter.push(
-        {
-          name: "dia2",
-        },
-        (instance, uid) => {
-          // 在回调里操作实例
-          console.log(instance);
-          console.log(uid);
-          setTimeout(() => {
-            instance.name = "外部修改";
-          }, 2000);
-        }
-      );
-      // 调用 this.$dialogRouter.close(uid) 关闭 dialog
-      setTimeout(()=>{
-        this.$dialogRouter.close(this.uid)
-      }, 4000)
-    },
-  }
-}
-<\/script>`,
-      codeUse: `// main.js
-import Vue from "vue";
-import App from "./App.vue";
-import dialogRouter from "./dialogRouter";
-
-new Vue({
-  router,
-  dialogRouter,
-  render: (h) => h(App),
-}).$mount("#app");
-
-
-// dialogRouter.js
-import Vue from "vue";
-import DialogRouter from "vue-dialogs-router";
-import dialog1 from "@/dialog/dialog-1.vue";
-Vue.use(DialogRouter);
-
-const dialogRouter = new DialogRouter({
-  dia1: dialog1,
-  dia2: () => import(/* webpackChunkName: "dialog" */ "@/dialog/dialog-2.vue"),
-  dia3: () => import(/* webpackChunkName: "dialog" */ "@/dialog/dialog-3.vue"),
-});
-
-export default dialogRouter;
-
-// page.vue
-this.$dialogRouter.push({name: 'dia1'})
-      `,
-      cmOptions: {
-        // codemirror options
-        tabSize: 4,
-        mode: "text/x-vue",
-        theme: "base16-light",
-        readOnly: "nocursor",
-        lineNumbers: true,
-        line: true,
-      },
-      useOptions: {
-        // codemirror options
-        tabSize: 4,
-        mode: "text/javascript",
-        theme: "base16-light",
-        readOnly: "nocursor",
-        lineNumbers: true,
-        line: true,
-      },
     };
   },
 
   methods: {
-    dialog1() {
-      this.$dialogRouter.push({
-        name: "dia1",
-        props: {
-          name: "kael",
-          age: 24,
-          sex: "男",
-          list: [1, 2, 3],
-        },
-        on: {
-          callback: (data) => {
-            console.log(data);
-          },
-        },
+    copy(type) {
+      this.$copyText(this[`${type}Code`]).then(() => {
+        this.$message({
+          type: "success",
+          message: "复制成功",
+        });
       });
-    },
-    dialog2() {
-      this.uid = this.$dialogRouter.push(
-        {
-          name: "dia2",
-        },
-        (instance, uid) => {
-          // 在回调里操作实例
-          console.log(instance);
-          console.log(uid);
-          setTimeout(() => {
-            instance.name = "外部修改";
-          }, 2000);
-        }
-      );
-      // 调用 this.$dialogRouter.close(uid) 关闭 dialog
-      setTimeout(() => {
-        this.$dialogRouter.close(this.uid);
-      }, 4000);
     },
   },
   mounted() {
-    this.codemirrorCodeUse.setSize('auto','460px')
-    this.codemirrorBaseCode.setSize('auto','400px')
-    this.codemirrorCodeUid.setSize('auto','460px')
-    this.codemirrorCodeVDialog.setSize('auto','70px')
     window.kael = this;
   },
 };
@@ -277,6 +167,7 @@ this.$dialogRouter.push({name: 'dia1'})
   font-size: 14px;
   color: #5e6d82;
   line-height: 1.5em;
+  margin: 0;
 }
 .code {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
@@ -285,5 +176,27 @@ this.$dialogRouter.push({name: 'dia1'})
 }
 .pane {
   margin: 20px;
+}
+.code-container {
+  position: relative;
+  border: 1px solid #d7dae2;
+  border-radius: 2px;
+  padding: 8px;
+  font-size: 0;
+}
+.code-value {
+  font-size: 12px;
+}
+.copy-button {
+  position: absolute;
+  font-size: 16px;
+  cursor: pointer;
+  color: #d7dae2;
+  border-radius: 2px;
+  right: 8px;
+  top: 8px;
+}
+.copy-button:hover {
+  color: #999;
 }
 </style>
