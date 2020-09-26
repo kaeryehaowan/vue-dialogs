@@ -23,7 +23,8 @@ export default class VueDialogs {
     });
   }
   static install(Vue) {
-    let dialogs = {};
+    let _dialogs = {};
+    let _VNode = {};
     Vue.mixin({
       created() {
         if (
@@ -31,33 +32,57 @@ export default class VueDialogs {
           this.$vnode.data &&
           this.$vnode.data._componentType === _componentType
         ) {
-          dialogs[this.$vnode.data._dialogMapKey] = this;
+          _dialogs[this.$vnode.data._dialogMapKey] = {
+            instance: this,
+            isAppendChild: false,
+          };
         }
       },
       mounted() {
         if (this.$options.dialogs && this.$root === this) {
-          this.$options.dialogs[_render]();
-          let _this = this;
-          const container = new Vue({
+          // 生成 dialogs 挂载容器
+          let _container = new Vue({
             name: "dialog-container",
             render(h) {
-              const dialogList = _this.$options.dialogs._dialogComponents;
-              return h(
-                "div",
-                {},
-                dialogList.map((DialogComponent) => {
-                  return h(DialogComponent.component, {
-                    _componentType: _componentType,
-                    _dialogMapKey: DialogComponent.dialogMapKey,
-                  });
-                })
-              );
+              return h("div", { attrs: { id: "__dialog__container__" } });
             },
           }).$mount();
-          document.body.appendChild(container.$el);
+          this.$root.$el.appendChild(_container.$el);
+          // 收集 dailogs
+          this.$options.dialogs[_render]();
+          const dialogList = this.$options.dialogs._dialogComponents;
+          dialogList.map((DialogComponent) => {
+            _dialogs[DialogComponent.dialogMapKey] = {
+              instance: null,
+              isAppendChild: false,
+            };
+            // 实例化 dialogs 组件
+            _VNode[DialogComponent.dialogMapKey] = new Vue({
+              name: `extend${DialogComponent.dialogMapKey}`,
+              render(h) {
+                return h(DialogComponent.component, {
+                  _componentType: _componentType,
+                  _dialogMapKey: DialogComponent.dialogMapKey,
+                });
+              },
+            }).$mount();
+          });
           Object.defineProperty(Vue.prototype, "$dialogs", {
             get() {
-              return dialogs;
+              // 使用 Proxy 截持，动态挂载
+              let proxyDialogs = new Proxy(_dialogs, {
+                get(target, propKey) {
+                  let _proxyDialog = Reflect.get(target, propKey);
+                  if (!_proxyDialog.isAppendChild) {
+                    _proxyDialog.isAppendChild = true;
+                    document
+                      .getElementById("__dialog__container__")
+                      .appendChild(_VNode[propKey].$el);
+                  }
+                  return _proxyDialog.instance;
+                },
+              });
+              return proxyDialogs;
             },
           });
         }
