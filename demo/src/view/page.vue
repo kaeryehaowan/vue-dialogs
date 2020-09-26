@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <h2 class="h2">XSFE Dialogs「集中式」解决方案</h2>
+    <h2 class="h2" style="padding-left: 20px">XSFE Dialogs「集中式」解决方案</h2>
     <p class="p" style="padding-left: 20px">
       统一注册，可在页面任何地方通过注册时的 key ，获取到 dialog 组件实例。继而就可以对 dialog 进行任何操作。
     </p>
@@ -79,7 +79,9 @@ export default {
 </script>
 <style scoped>
 .page {
-  padding: 10px 20px;
+  padding-top: 40px;
+  margin: auto;
+  width: 800px;
 }
 .h2 {
   font-weight: 400;
