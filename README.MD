@@ -2,16 +2,9 @@
 
 > 仓库地址：[https://gitlab.frxs.cn/xsfe-utils/vue-dialogs.git](https://gitlab.frxs.cn/xsfe-utils/vue-dialogs.git)
 
-## vue-dialogs v0.1.0
+## vue-dialogs v0.1.2
 
-dialog router，类 vue-router 的方式管理 dialog，类 component 的方式使用 dialog。
-
-- 全局注册，统一管理。
-- 可懒加载。
-- 支持 props，callback。
-- 可通过 uid（dialog 唯一返回值），获取到 dialogComponent 的组件实例。
-- 可通过 uid 关闭指定的 dialog。
-- 可通过 v-dialog 指令打开 dialog。
+统一注册，可在页面任何地方通过注册时的 key ，获取到 dialog 组件实例。继而就可以对 dialog 进行任何操作。
 
 ## Installation
 
@@ -19,103 +12,75 @@ dialog router，类 vue-router 的方式管理 dialog，类 component 的方式�
 npm i @xsyx/vue-dialogs -S
 ```
 
-## Methods
-
-| 方法      | 说明                                                                                                                                              | 参数                                                                                                                                                                                                                       |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| push      | 类似 vue-router 的 push，用来打开一个 dialog 组件。this.\$dialogRouter.push({name,props,on},callBack)                                             | name[type=String]为 dialogRouter 里注册时的 name 值，props[type=Object]为需要传入到 dialog 的属性，on[type=Object]为注册的 event；callBack 为打开 dialog 之后的回调，它有两个参数，一个为 dialogComponent 实例，一个为 uid |
-| close     | 可通过 uid 来关闭 dialog。this.\$dialogRouter.close(uid)                                                                                          | uid 为 push 时返回的唯一值                                                                                                                                                                                                 |
-| closeAll  | 关闭全部 dialog                                                                                                                                   | 无                                                                                                                                                                                                                         |
-| getDialog | 用来获取 dialog 实例，这是一个同步方法，因为视图渲染 或 懒加载的原因，可能会无法获取到实例，需要自行把握调用时机，建议在 push callBack 里获取实例 | uid 为 push 时返回的唯一值                                                                                                                                                                                                 |
-
-## Notes
-
-Vue.use(DialogRouter, {key: 'show'})，这里的 key 即为控制 dialog 是否显示的变量。默认为 show。dialog 组件里必须要有这个 key 
-
 ## Usage
 
 ```js
 // main.js
 import Vue from "vue";
 import App from "./App.vue";
-import dialogRouter from "./dialogRouter";
+import router from "./router";
+import Dialogs from '@xsyx/vue-dialogs'
+import dialog1 from "@/dialog/dialog-1.vue";
+import dialog2 from "@/dialog/dialog-2.vue";
+
+Vue.use(Dialogs);
+
+const dialogs = new Dialogs({
+  dia1: dialog1,
+  dia2: dialog2
+});
 
 new Vue({
   router,
-  dialogRouter,
+  dialogs,
   render: (h) => h(App),
 }).$mount("#app");
-```
 
-```js
-// dialogRouter.js
-import Vue from "vue";
-import DialogRouter from "vue-dialogs-router";
-import dialog1 from "@/dialog/dialog-1.vue";
-Vue.use(DialogRouter);
-const dialogRouter = new DialogRouter({
-  dia1: dialog1,
-  dia2: () => import(/* webpackChunkName: "dialog" */ "@/dialog/dialog-2.vue"),
-  dia3: () => import(/* webpackChunkName: "dialog" */ "@/dialog/dialog-3.vue"),
-});
-export default dialogRouter;
 ```
 
 ```vue
 // page.vue
 <template>
   <div>
-    <button v-dialog:click="{ name: 'dia3' }">打开 dialog</button>
+    <button @click="dialogShow">打开 dialog</button>
   </div>
 </template>
 <script>
 export default {
-    mounted(){
-        // dia1
-        this.$dialogRouter.push({
-            name: "dia1",
-            props: {
-                name: "kael",
-                age: 100,
-                sex: "男",
-                list: [1, 2, 3],
-            },
-            on: {
-                callback: (data) => {
-                    console.log(data);
-                },
-            },
-        });
+  methods: {
+    dialogShow(){
+      this.$dialogs.dia2.open({
+        name: "我是 page2 传入的参数",
+        count: this.count++
+      });
 
-        // dia2
-        dialog2() {
-            this.uid = this.$dialogRouter.push(
-                {
-                    name: "dia2",
-                },
-                (instance, uid) => {
-                    // 在回调里操作实例
-                    console.log(instance);
-                    console.log(uid);
-                    setTimeout(() => {
-                        instance.name = "外部修改";
-                    }, 2000);
-                }
-            );
-            // 调用 this.$dialogRouter.close(uid) 关闭 dialog
-            setTimeout(()=>{
-                this.$dialogRouter.close(this.uid)
-            }, 4000)
-        },
+      // 或者
+      this.$dialogs.dia2.show = true
+      this.$dialogs.dia2.count = this.count++
+      this.$dialogs.dia2.propsName = '我是 page2 传入的参数'
+
+    },
+    dialogClose(){
+      this.$dialogs.dia2.close()
+      // 或者
+      this.$dialogs.dia2.show = false
+      // 获取 dialog 的数据
+      console.log(this.$dialogs.dia2.count)
     }
+  }
 }
 </script>
 ```
 
 ```vue
 <template>
-  <el-dialog :visible.sync="show" title="dialog3">
-    这是通过 v-dialog 打开的 dialog
+   <el-dialog :visible.sync="show" title="dialog2">
+    <p>
+      这是接收到的参数： <span class="red">{{propsName}}</span>
+    </p>
+    <p>
+      接收到的count值为： <span class="red">{{count}}</span>
+    </p>
   </el-dialog>
 </template>
 
@@ -125,8 +90,24 @@ export default {
   data() {
     return {
       show: false,
+      count: 10,
+      propsName: ''
     };
   },
+  methods: {
+
+    open(data){
+      this.show = true
+      this.propsName = data.name
+      this.count = data.count
+    },
+    close(){
+      this.show = false
+    },
+    emit(cb){
+      cb(`这是来自 dialog2 的消息,count来自dialog,count: ${this.count}`)
+    }
+  }
 };
 </script>
 ```

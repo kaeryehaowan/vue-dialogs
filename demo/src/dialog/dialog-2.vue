@@ -1,10 +1,10 @@
 <template>
   <el-dialog :visible.sync="show" title="dialog2">
-    可通过 uid 对组件实例进行操作。(下例 2 秒之后修改 name 值，再过 2 秒关闭 dialog)
     <p>
-      组件内的 data.name:
-      <span class="red">{{name}}</span>
-      <span class="yellow">{{time}}</span>
+      这是接收到的参数： <span class="red">{{propsName}}</span>
+    </p>
+    <p>
+      接收到的count值为： <span class="red">{{count}}</span>
     </p>
   </el-dialog>
 </template>
@@ -15,19 +15,22 @@ export default {
   data() {
     return {
       show: false,
-      name: "内部值",
-      time: 4,
+      count: 10,
+      propsName: ''
     };
   },
-  created() {
-    this.timer = setInterval(() => {
-      console.log("kael");
-      if (this.time < 1) {
-        clearInterval(this.timer);
-      } else {
-        this.time--;
-      }
-    }, 1000);
+  methods: {
+    open(data){
+      this.show = true
+      this.propsName = data.name
+      this.count = data.count
+    },
+    close(){
+      this.show = false
+    },
+    emit(cb){
+      cb(`这是来自 dialog2 的消息,count来自dialog,count: ${this.count}`)
+    }
   },
 };
 </script>

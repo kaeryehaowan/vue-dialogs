@@ -37,6 +37,9 @@ export default {
     },
   },
   methods: {
+    open(){
+      this.show = true
+    },
     cb(){
       this.$emit('callback',{name: 'dialog_1'})
     }

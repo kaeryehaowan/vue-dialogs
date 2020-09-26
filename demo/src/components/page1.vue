@@ -8,23 +8,7 @@ export default {
   name: "page1",
   methods: {
     showDialog() {
-      this.$dialogRouter.push({
-        name: "dia1",
-        props: {
-          name: "kael",
-          age: 24,
-          sex: "男",
-          list: [1, 2, 3],
-        },
-        on: {
-          callback: (data) => {
-            this.$alert(
-              `这是 dialog1 组件里的 data.name: ${data.name}`,
-              "dialog组件 emit 的事件回调"
-            );
-          },
-        },
-      });
+      this.$dialogs.dia1.open()
     },
   },
 };
