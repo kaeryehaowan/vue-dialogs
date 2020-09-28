@@ -25,6 +25,7 @@ export default class VueDialogs {
   static install(Vue) {
     let _dialogs = {};
     let _VNode = {};
+    let _root = null;
     Vue.mixin({
       created() {
         if (
@@ -40,14 +41,15 @@ export default class VueDialogs {
       },
       mounted() {
         if (this.$options.dialogs && this.$root === this) {
+          _root = this
           // 生成 dialogs 挂载容器
-          let _container = new Vue({
-            name: "dialog-container",
-            render(h) {
-              return h("div", { attrs: { id: "__dialog__container__" } });
-            },
-          }).$mount();
-          this.$root.$el.appendChild(_container.$el);
+          // let _container = new Vue({
+          //   name: "dialog-container",
+          //   render(h) {
+          //     return h("div", { attrs: { id: "__dialog__container__" } });
+          //   },
+          // }).$mount();
+          // this.$root.$el.appendChild(_container.$el);
           // 收集 dailogs
           this.$options.dialogs[_render]();
           const dialogList = this.$options.dialogs._dialogComponents;
@@ -75,9 +77,7 @@ export default class VueDialogs {
                   let _proxyDialog = Reflect.get(target, propKey);
                   if (!_proxyDialog.isAppendChild) {
                     _proxyDialog.isAppendChild = true;
-                    document
-                      .getElementById("__dialog__container__")
-                      .appendChild(_VNode[propKey].$el);
+                    _root.$el.appendChild(_VNode[propKey].$el);
                   }
                   return _proxyDialog.instance;
                 },
