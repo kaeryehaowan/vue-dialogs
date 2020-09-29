@@ -8,8 +8,10 @@ import dialog2 from "@/dialog/dialog-2.vue";
 Vue.use(Dialogs);
 
 const dialogs = new Dialogs({
-  dia1: dialog1,
-  dia2: dialog2
+  // 预留扩展位置，比如 options
+  // dia1: { component: dialog1, options: {width: 300, height: 300} },
+  dia1: { component: dialog1 },
+  dia2: { component: dialog2 },
 });
 
 new Vue({

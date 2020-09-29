@@ -6,7 +6,13 @@ const isObject = (s: any) => typeof s === "object" && s !== null;
 export default class VueDialogs {
   private _dialogComponents: Array<any> = [];
   constructor(dialogMap: any = {}) {
-    this[_dialogMap] = dialogMap;
+    this[_dialogMap] = {}
+    console.log(111,dialogMap)
+    Object.keys(dialogMap).forEach(key => {
+      console.log(333)
+      this[_dialogMap][key] = dialogMap[key].component
+    })
+    console.log(222,this[_dialogMap])
   }
   [_getComponent](name: string) {
     return this[_dialogMap][name];
@@ -42,14 +48,6 @@ export default class VueDialogs {
       mounted() {
         if (this.$options.dialogs && this.$root === this) {
           _root = this
-          // 生成 dialogs 挂载容器
-          // let _container = new Vue({
-          //   name: "dialog-container",
-          //   render(h) {
-          //     return h("div", { attrs: { id: "__dialog__container__" } });
-          //   },
-          // }).$mount();
-          // this.$root.$el.appendChild(_container.$el);
           // 收集 dailogs
           this.$options.dialogs[_render]();
           const dialogList = this.$options.dialogs._dialogComponents;
