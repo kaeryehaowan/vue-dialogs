@@ -4,9 +4,17 @@ import dialog1 from "@/dialog/dialog-1.vue";
 import dialog2 from "@/dialog/dialog-2.vue";
 Vue.use(Dialogs);
 
-const dialogs = new Dialogs({
-  dia1: { component: dialog1 },
-  dia2: { component: dialog2 },
-});
+let dialogs = [
+  {
+    name: "dia1",
+    component: dialog1,
+  },
+  {
+    name: "dia2",
+    component: dialog2,
+  },
+];
 
-export default dialogs;
+const dialog = new Dialogs({ dialogs });
+
+export default dialog;

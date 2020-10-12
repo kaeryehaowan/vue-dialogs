@@ -7,12 +7,9 @@ export default class VueDialogs {
   private _dialogComponents: Array<any> = [];
   constructor(dialogMap: any = {}) {
     this[_dialogMap] = {}
-    console.log(111,dialogMap)
-    Object.keys(dialogMap).forEach(key => {
-      console.log(333)
-      this[_dialogMap][key] = dialogMap[key].component
+    dialogMap.dialogs.forEach(key => {
+      this[_dialogMap][key.name] = key.component
     })
-    console.log(222,this[_dialogMap])
   }
   [_getComponent](name: string) {
     return this[_dialogMap][name];
@@ -46,11 +43,11 @@ export default class VueDialogs {
         }
       },
       mounted() {
-        if (this.$options.dialogs && this.$root === this) {
+        if (this.$options.dialog && this.$root === this) {
           _root = this
           // 收集 dailogs
-          this.$options.dialogs[_render]();
-          const dialogList = this.$options.dialogs._dialogComponents;
+          this.$options.dialog[_render]();
+          const dialogList = this.$options.dialog._dialogComponents;
           dialogList.map((DialogComponent) => {
             _dialogs[DialogComponent.dialogMapKey] = {
               instance: null,
