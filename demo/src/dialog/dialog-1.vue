@@ -1,11 +1,6 @@
 <template>
     <el-dialog :visible.sync='show' title="dialog1">
-        <el-form>
-          <el-form-item label="name">String：{{name}}</el-form-item>
-          <el-form-item label="age">Number：{{age}}</el-form-item>
-          <el-form-item label="sex">String：{{sex}}</el-form-item>
-          <el-form-item label="list">Array：{{list}}</el-form-item>
-        </el-form>
+        <p>dialog1 组件</p>
         <el-button @click="cb">on</el-button>
     </el-dialog>
 </template>
@@ -18,30 +13,16 @@ export default {
       show: false
     }
   },
-  props: {
-    name: {
-      type: String ,
-      default: ''
-    },
-    age: {
-      type: Number ,
-      default: 18
-    },
-    sex: {
-      type: String ,
-      default: '男'
-    },
-    list: {
-      type: Array ,
-      default: ()=>[]
-    },
-  },
   methods: {
     open(){
       this.show = true
     },
     cb(){
-      this.$emit('callback',{name: 'dialog_1'})
+      this.$router.push({
+        path: '/about'
+      })
+      console.log(this)
+      // this.$emit('callback',{name: 'dialog_1'})
     }
   }
 }
