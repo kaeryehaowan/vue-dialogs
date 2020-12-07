@@ -2,7 +2,7 @@
 
 > 仓库地址：[https://gitlab.frxs.cn/xsfe-utils/vue-dialogs.git](https://gitlab.frxs.cn/xsfe-utils/vue-dialogs.git)
 
-## vue-dialogs v0.1.2
+## vue-dialogs v0.1.5
 
 统一注册，可在页面任何地方通过注册时的 key ，获取到 dialog 组件实例。继而就可以对 dialog 进行任何操作。
 
@@ -25,14 +25,22 @@ import dialog2 from "@/dialog/dialog-2.vue";
 
 Vue.use(Dialogs);
 
-const dialogs = new Dialogs({
-  dia1: dialog1,
-  dia2: dialog2
-});
+let dialogs = [
+  {
+    name: "dia1",
+    component: dialog1,
+  },
+  {
+    name: "dia2",
+    component: dialog2,
+  },
+];
+
+const dialog = new Dialogs({ dialogs});
 
 new Vue({
   router,
-  dialogs,
+  dialog,
   render: (h) => h(App),
 }).$mount("#app");
 

@@ -48,13 +48,16 @@ export default class VueDialogs {
           // 收集 dailogs
           this.$options.dialog[_render]();
           const dialogList = this.$options.dialog._dialogComponents;
+          // 因对 this.$root.$options.dialog 进行merge时，会有循环引用的问题。所以先缓存
+          const _dialogCache = _root.$options.dialog
+          delete _root.$options.dialog
           dialogList.map((DialogComponent) => {
             _dialogs[DialogComponent.dialogMapKey] = {
               instance: null,
               isAppendChild: false,
             };
             // 实例化 dialogs 组件
-            _VNode[DialogComponent.dialogMapKey] = new Vue({
+            _VNode[DialogComponent.dialogMapKey] = new Vue(Object.assign(_root.$options,{
               name: `extend${DialogComponent.dialogMapKey}`,
               render(h) {
                 return h(DialogComponent.component, {
@@ -62,8 +65,9 @@ export default class VueDialogs {
                   _dialogMapKey: DialogComponent.dialogMapKey,
                 });
               },
-            }).$mount();
+            })).$mount();
           });
+          _root.$options.dialog = _dialogCache;
           Object.defineProperty(Vue.prototype, "$dialogs", {
             get() {
               // 使用 Proxy 截持，动态挂载

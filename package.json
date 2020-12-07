@@ -1,8 +1,9 @@
 {
   "name": "@xsyx/vue-dialogs",
-  "version": "0.1.2",
+  "version": "0.1.5",
   "description": "",
   "main": "dist/bundle.js",
+  "files": ["dist/bundle.js"],
   "scripts": {
     "serve":"cd demo && npm run serve",
     "build": "webpack",
