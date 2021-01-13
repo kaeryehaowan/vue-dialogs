@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        // "module": "umd",
+        // "moduleResolution":"node",
+        // "types": [
+        //     "node"
+        // ],
+        "lib": [
+            "es5",
+            "dom",
+            "es2015"
+        ]
+    },
+    "include": [
+        "**/*.ts",
+        "./src",
+        "index.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist",
+        "**/*.spec.ts"
+    ]
+}
