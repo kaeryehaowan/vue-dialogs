@@ -1,15 +1,11 @@
-# XSFE Dialogs「集中式」解决方案
+## vue-dialogs-instance v0.1.5
 
-> 仓库地址：[https://gitlab.frxs.cn/xsfe-utils/vue-dialogs.git](https://gitlab.frxs.cn/xsfe-utils/vue-dialogs.git)
-
-## vue-dialogs v0.1.5
-
-统一注册，可在页面任何地方通过注册时的 key ，获取到 dialog 组件实例。继而就可以对 dialog 进行任何操作。
+统一注册，可在页面任何地方通过注册时的 key ，获取到 dialog 组件实例。继而就可以对 dialog 进行任何操作。dialog组件只会实例化一次，意味着每一次用 this.$dialogs.dialogName.open() 打开的dialog都是同一个。
 
 ## Installation
 
 ```js
-npm i @xsyx/vue-dialogs -S
+npm i vue-dialog-instance -S
 ```
 
 ## Usage
@@ -19,7 +15,7 @@ npm i @xsyx/vue-dialogs -S
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
-import Dialogs from '@xsyx/vue-dialogs'
+import Dialogs from 'vue-dialog-instance'
 import dialog1 from "@/dialog/dialog-1.vue";
 import dialog2 from "@/dialog/dialog-2.vue";
 

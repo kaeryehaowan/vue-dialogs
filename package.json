@@ -1,16 +1,21 @@
 {
-  "name": "@xsyx/vue-dialogs",
-  "version": "0.1.5",
+  "name": "vue-dialog-instance",
+  "version": "1.0.0",
   "description": "",
   "main": "dist/bundle.js",
   "files": ["dist/bundle.js"],
+  "keywords": [
+    "dialog",
+    "instance",
+    "vue"
+  ],
   "scripts": {
     "serve":"cd demo && npm run serve",
     "build": "webpack",
     "test": "node test/test.js",
     "pub": "cnpm publish"
   },
-  "author": "chenkuan <393667111@qq.com>",
+  "author": "kael",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^10.12.21",
